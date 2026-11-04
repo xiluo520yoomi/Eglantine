@@ -7,6 +7,10 @@ on:
         description: Publish the binaries as a GitHub release
         type: boolean
         default: true
+      windows_only:
+        description: Build Windows targets only (skip Linux and macOS)
+        type: boolean
+        default: false
   push:
     branches:
       - nx2
@@ -45,6 +49,8 @@ jobs:
   build:
     name: ${{ matrix.platform }} binary
     runs-on: ${{ matrix.runner }}
+    # Allow dispatching a Windows-only build; push events build everything.
+    if: inputs.windows_only != true || startsWith(matrix.platform, 'windows')
     env:
       CCACHE_DIR: ${{ github.workspace }}/.ccache
       CCACHE_MAXSIZE: 3000M
